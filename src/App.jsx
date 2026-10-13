@@ -236,6 +236,190 @@ const BackBtn = ({ onClick }) => (
   }}>← Back</button>
 );
 
+
+// ─── CONTACT MODAL ───────────────────────────────────────────────────────────
+const ContactModal = ({ participant, onClose }) => {
+  const [activeMethod, setActiveMethod] = useState(null);
+  const [textMsg, setTextMsg] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const phone = "513-555-0142";
+  const email = participant.name.split(" ").join(".").toLowerCase() + "@jagprogram.org";
+
+  const handleSend = () => {
+    setSent(true);
+    setTimeout(() => { setSent(false); setActiveMethod(null); setTextMsg(""); setEmailSubject(""); setEmailBody(""); }, 1800);
+  };
+
+  if (sent) return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
+      <div style={{ background: COLORS.card, borderRadius: 20, padding: 32, textAlign: "center", width: 280 }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>{activeMethod === "email" ? "✉️" : "💬"}</div>
+        <div style={{ fontSize: 18, fontWeight: "700", color: COLORS.white, marginBottom: 6 }}>
+          {activeMethod === "email" ? "Email Sent!" : "Text Sent!"}
+        </div>
+        <div style={{ fontSize: 13, color: COLORS.muted }}>Logged to {participant.name}'s record</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ background: COLORS.navyMid, borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 375, padding: "0 0 32px", border: "1px solid " + COLORS.navyLight }}>
+
+        {/* Handle */}
+        <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 8px" }}>
+          <div style={{ width: 40, height: 4, borderRadius: 2, background: COLORS.navyLight }} />
+        </div>
+
+        {/* Header */}
+        <div style={{ padding: "0 20px 16px", display: "flex", alignItems: "center", gap: 12, borderBottom: "1px solid " + COLORS.navyLight }}>
+          <Avatar initials={participant.avatar} size={44} risk={participant.risk} />
+          <div>
+            <div style={{ fontSize: 16, fontWeight: "700", color: COLORS.white }}>{participant.name}</div>
+            <div style={{ fontSize: 12, color: COLORS.muted }}>Grade {participant.grade} · {participant.program}</div>
+          </div>
+          <button onClick={onClose} style={{ marginLeft: "auto", background: "none", border: "none", color: COLORS.muted, fontSize: 20, cursor: "pointer", padding: 4 }}>✕</button>
+        </div>
+
+        {/* Method selector */}
+        {!activeMethod && (
+          <div style={{ padding: "20px 20px 0" }}>
+            <div style={{ fontSize: 12, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>How would you like to reach out?</div>
+
+            {/* Phone Call */}
+            <a href={"tel:" + phone} style={{ textDecoration: "none" }}>
+              <div style={{
+                background: COLORS.card, borderRadius: 14, padding: "16px 18px", marginBottom: 10,
+                border: "1px solid " + COLORS.teal + "44", display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
+              }}>
+                <div style={{ width: 44, height: 44, borderRadius: 12, background: COLORS.teal + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>📞</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: "700", color: COLORS.white }}>Phone Call</div>
+                  <div style={{ fontSize: 12, color: COLORS.teal, marginTop: 2 }}>{phone}</div>
+                </div>
+                <span style={{ color: COLORS.teal, fontSize: 18 }}>›</span>
+              </div>
+            </a>
+
+            {/* Text Message */}
+            <div onClick={() => setActiveMethod("text")} style={{
+              background: COLORS.card, borderRadius: 14, padding: "16px 18px", marginBottom: 10,
+              border: "1px solid " + COLORS.green + "44", display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
+            }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: COLORS.green + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>💬</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: "700", color: COLORS.white }}>Text Message</div>
+                <div style={{ fontSize: 12, color: COLORS.green, marginTop: 2 }}>Send an SMS</div>
+              </div>
+              <span style={{ color: COLORS.green, fontSize: 18 }}>›</span>
+            </div>
+
+            {/* Email */}
+            <div onClick={() => { setEmailSubject("JAG Follow-Up — " + participant.name); setActiveMethod("email"); }} style={{
+              background: COLORS.card, borderRadius: 14, padding: "16px 18px", marginBottom: 10,
+              border: "1px solid " + COLORS.gold + "44", display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
+            }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: COLORS.gold + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>✉️</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: "700", color: COLORS.white }}>Email</div>
+                <div style={{ fontSize: 12, color: COLORS.gold, marginTop: 2 }}>{email}</div>
+              </div>
+              <span style={{ color: COLORS.gold, fontSize: 18 }}>›</span>
+            </div>
+
+            {/* Contact info row */}
+            <div style={{ background: COLORS.navy, borderRadius: 10, padding: "10px 14px", display: "flex", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 12, color: COLORS.muted }}>Last contact</span>
+              <span style={{ fontSize: 12, color: COLORS.offWhite, fontWeight: "600" }}>{participant.lastContact}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Text Message Composer */}
+        {activeMethod === "text" && (
+          <div style={{ padding: "20px 20px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <button onClick={() => setActiveMethod(null)} style={{ background: "none", border: "none", color: COLORS.teal, fontSize: 13, cursor: "pointer", padding: 0 }}>← Back</button>
+              <div style={{ fontSize: 14, fontWeight: "700", color: COLORS.white }}>Text {participant.name.split(" ")[0]}</div>
+            </div>
+            <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 8 }}>To: {phone}</div>
+
+            {/* Quick templates */}
+            <div style={{ fontSize: 11, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Quick Templates</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+              {[
+                "Hi! Just checking in on how you're doing.",
+                "Don't forget about our meeting tomorrow.",
+                "Please call me when you get a chance.",
+                "Your goal review is coming up soon!",
+              ].map(t => (
+                <button key={t} onClick={() => setTextMsg(t)} style={{
+                  padding: "6px 10px", borderRadius: 16, background: textMsg === t ? COLORS.green + "22" : COLORS.card,
+                  border: "1px solid " + (textMsg === t ? COLORS.green : COLORS.navyLight),
+                  color: textMsg === t ? COLORS.green : COLORS.muted,
+                  fontSize: 11, cursor: "pointer", textAlign: "left",
+                }}>{t.length > 30 ? t.slice(0, 28) + "…" : t}</button>
+              ))}
+            </div>
+
+            <textarea value={textMsg} onChange={e => setTextMsg(e.target.value)} placeholder="Type your message…"
+              style={{ width: "100%", background: COLORS.card, border: "1px solid " + COLORS.navyLight, borderRadius: 12, padding: 14, color: COLORS.white, fontSize: 13, minHeight: 100, resize: "none", boxSizing: "border-box", outline: "none", fontFamily: "inherit", marginBottom: 8 }} />
+            <div style={{ fontSize: 11, color: COLORS.muted, textAlign: "right", marginBottom: 14 }}>{textMsg.length}/160</div>
+
+            <button onClick={handleSend} disabled={!textMsg.trim()} style={{
+              width: "100%", padding: 14, borderRadius: 12, border: "none", cursor: textMsg.trim() ? "pointer" : "default",
+              background: textMsg.trim() ? "linear-gradient(135deg, " + COLORS.green + ", #18A85E)" : COLORS.navyLight,
+              color: textMsg.trim() ? COLORS.navy : COLORS.muted, fontWeight: "800", fontSize: 15,
+            }}>Send Text Message 💬</button>
+          </div>
+        )}
+
+        {/* Email Composer */}
+        {activeMethod === "email" && (
+          <div style={{ padding: "20px 20px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <button onClick={() => setActiveMethod(null)} style={{ background: "none", border: "none", color: COLORS.teal, fontSize: 13, cursor: "pointer", padding: 0 }}>← Back</button>
+              <div style={{ fontSize: 14, fontWeight: "700", color: COLORS.white }}>Email {participant.name.split(" ")[0]}</div>
+            </div>
+            <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 12 }}>To: {email}</div>
+
+            <div style={{ fontSize: 11, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Subject</div>
+            <input value={emailSubject} onChange={e => setEmailSubject(e.target.value)}
+              style={{ width: "100%", background: COLORS.card, border: "1px solid " + COLORS.navyLight, borderRadius: 10, padding: "10px 14px", color: COLORS.white, fontSize: 13, boxSizing: "border-box", outline: "none", fontFamily: "inherit", marginBottom: 12 }} />
+
+            {/* Quick templates */}
+            <div style={{ fontSize: 11, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Quick Templates</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+              {["Check-in", "Goal Review", "Resource Info", "Event Reminder"].map(t => (
+                <button key={t} onClick={() => setEmailBody("Hi " + participant.name.split(" ")[0] + ",\n\nI wanted to reach out regarding " + t.toLowerCase() + ".\n\nPlease let me know if you have any questions.\n\nBest,\nSarah K.\nJAG Specialist")} style={{
+                  padding: "6px 12px", borderRadius: 16, background: COLORS.card,
+                  border: "1px solid " + COLORS.navyLight, color: COLORS.muted, fontSize: 11, cursor: "pointer",
+                }}>{t}</button>
+              ))}
+            </div>
+
+            <div style={{ fontSize: 11, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Message</div>
+            <textarea value={emailBody} onChange={e => setEmailBody(e.target.value)} placeholder={"Hi " + participant.name.split(" ")[0] + ",\n\nType your message here…"}
+              style={{ width: "100%", background: COLORS.card, border: "1px solid " + COLORS.navyLight, borderRadius: 12, padding: 14, color: COLORS.white, fontSize: 13, minHeight: 110, resize: "none", boxSizing: "border-box", outline: "none", fontFamily: "inherit", marginBottom: 14 }} />
+
+            <button onClick={handleSend} disabled={!emailBody.trim() || !emailSubject.trim()} style={{
+              width: "100%", padding: 14, borderRadius: 12, border: "none",
+              cursor: (emailBody.trim() && emailSubject.trim()) ? "pointer" : "default",
+              background: (emailBody.trim() && emailSubject.trim()) ? "linear-gradient(135deg, " + COLORS.gold + ", " + COLORS.goldDim + ")" : COLORS.navyLight,
+              color: (emailBody.trim() && emailSubject.trim()) ? COLORS.navy : COLORS.muted,
+              fontWeight: "800", fontSize: 15,
+            }}>Send Email ✉️</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ─── Screens ──────────────────────────────────────────────────────────────────
 
 // SPLASH / LOGIN
@@ -492,6 +676,7 @@ const ParticipantsScreen = ({ navigate }) => {
 // PARTICIPANT DETAIL
 const ParticipantDetailScreen = ({ participant: p, navigate }) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [showContact, setShowContact] = useState(false);
   const tabs = ["overview", "services", "notes"];
 
   const serviceHistory = [
@@ -521,10 +706,14 @@ const ParticipantDetailScreen = ({ participant: p, navigate }) => {
               <Badge label={`${p.risk} risk`} color={p.risk === "low" ? COLORS.green : p.risk === "medium" ? COLORS.orange : COLORS.red} small />
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <button style={{ background: COLORS.teal + "22", border: `1px solid ${COLORS.teal}44`, borderRadius: 8, padding: "8px 12px", color: COLORS.teal, fontSize: 14, cursor: "pointer" }}>📞</button>
-            <button style={{ background: COLORS.gold + "22", border: `1px solid ${COLORS.gold}44`, borderRadius: 8, padding: "8px 12px", color: COLORS.gold, fontSize: 14, cursor: "pointer" }}>✉️</button>
-          </div>
+          <button onClick={() => setShowContact(true)} style={{
+            background: "linear-gradient(135deg, " + COLORS.teal + ", " + COLORS.tealDim + ")",
+            border: "none", borderRadius: 10, padding: "9px 14px",
+            color: COLORS.navy, fontSize: 12, fontWeight: "700", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <span>📲</span><span>Contact</span>
+          </button>
         </div>
         {/* Tabs */}
         <div style={{ display: "flex", borderBottom: `1px solid ${COLORS.navyLight}` }}>
@@ -615,6 +804,7 @@ const ParticipantDetailScreen = ({ participant: p, navigate }) => {
           </>
         )}
       </div>
+      {showContact && <ContactModal participant={p} onClose={() => setShowContact(false)} />}
     </div>
   );
 };

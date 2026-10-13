@@ -25,7 +25,7 @@ const style = (obj) => obj;
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 const PARTICIPANTS = [
-  { id: 1, name: "Marcus Johnson", grade: "11", program: "Work-Based Learning", status: "Active", lastContact: "2 days ago", goals: 3, tasks: 2, avatar: "MJ", risk: "low" },
+  { id: 1, name: "Marcus Johnson", grade: "11", program: "Work-Based Learning", status: "Active", lastContact: "2 days ago", goals: 3, tasks: 2, avatar: "MJ", risk: "low", phone: "+15138330854" },
   { id: 2, name: "Aaliyah Torres", grade: "12", program: "Career Development", status: "Active", lastContact: "Today", goals: 4, tasks: 1, avatar: "AT", risk: "medium" },
   { id: 3, name: "Devon Williams", grade: "10", program: "Employability Skills", status: "At Risk", lastContact: "5 days ago", goals: 2, tasks: 4, avatar: "DW", risk: "high" },
   { id: 4, name: "Priya Patel", grade: "11", program: "Work-Based Learning", status: "Active", lastContact: "Yesterday", goals: 5, tasks: 0, avatar: "PP", risk: "low" },
@@ -245,10 +245,21 @@ const ContactModal = ({ participant, onClose }) => {
   const [emailBody, setEmailBody] = useState("");
   const [sent, setSent] = useState(false);
 
-  const phone = "513-555-0142";
+  const phone = participant.phone || "No phone on file";
   const email = participant.name.split(" ").join(".").toLowerCase() + "@jagprogram.org";
 
-  const handleSend = () => {
+  const handleSend = async () => {
+    if (activeMethod === "text" && participant.phone) {
+      try {
+        await fetch("/.netlify/functions/send-checkin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ toNumber: participant.phone, participantName: participant.name }),
+        });
+      } catch (err) {
+        console.error("SMS send error:", err);
+      }
+    }
     setSent(true);
     setTimeout(() => { setSent(false); setActiveMethod(null); setTextMsg(""); setEmailSubject(""); setEmailBody(""); }, 1800);
   };
@@ -370,11 +381,11 @@ const ContactModal = ({ participant, onClose }) => {
               style={{ width: "100%", background: COLORS.card, border: "1px solid " + COLORS.navyLight, borderRadius: 12, padding: 14, color: COLORS.white, fontSize: 13, minHeight: 100, resize: "none", boxSizing: "border-box", outline: "none", fontFamily: "inherit", marginBottom: 8 }} />
             <div style={{ fontSize: 11, color: COLORS.muted, textAlign: "right", marginBottom: 14 }}>{textMsg.length}/160</div>
 
-            <button onClick={handleSend} disabled={!textMsg.trim()} style={{
-              width: "100%", padding: 14, borderRadius: 12, border: "none", cursor: textMsg.trim() ? "pointer" : "default",
-              background: textMsg.trim() ? "linear-gradient(135deg, " + COLORS.green + ", #18A85E)" : COLORS.navyLight,
-              color: textMsg.trim() ? COLORS.navy : COLORS.muted, fontWeight: "800", fontSize: 15,
-            }}>Send Text Message 💬</button>
+            <button onClick={handleSend} style={{
+              width: "100%", padding: 14, borderRadius: 12, border: "none", cursor: "pointer",
+              background: "linear-gradient(135deg, " + COLORS.green + ", #18A85E)",
+              color: COLORS.navy, fontWeight: "800", fontSize: 15,
+            }}>Send JAG Check-In SMS 📲</button>
           </div>
         )}
 
